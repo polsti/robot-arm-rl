@@ -32,7 +32,7 @@ def main():
         action = robot_env.sample_action()
 
         observation, reward, done, terminated, truncated, info = robot_env.step(action)
-        metrics.update(reward)
+        metrics.update(reward, action)
         print(f"Step {step + 1}: reward={reward:.4f}, done={done}")
 
         if done:
