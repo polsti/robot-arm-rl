@@ -18,10 +18,19 @@ class EpisodeMetrics:
         self.final_distance = None
         self.success = False
 
-    def update(self, reward):
+        self.total_action_magnitude = 0.0
+        self.max_action_magnitude = 0.0
+        self.average_action_magnitude = 0.0
+
+    def update(self, reward, action):
         """Updates reward and step counter after each environment step."""
         self.total_reward += reward
         self.steps += 1
+        if action is not None:
+            action_magnitude = np.linalg.norm(action)
+
+            self.total_action_magnitude += action_magnitude
+            self.max_action_magnitude = max(self.max_action_magnitude, action_magnitude)
 
     def finish(self, observation, info):
         """
@@ -38,7 +47,9 @@ class EpisodeMetrics:
 
         # Gymnasium Robotics stores task success in info["is_success"]
         self.success = bool(info.get("is_success", False))
-
+        if self.steps > 0:
+            self.average_action_magnitude = self.total_action_magnitude / self.steps
+            
     def as_dict(self):
         """Returns metrics in dictionary format for printing or saving."""
         return {
@@ -46,4 +57,7 @@ class EpisodeMetrics:
             "steps": self.steps,
             "final_distance": self.final_distance,
             "success": self.success,
+            "total_action_magnitude": self.total_action_magnitude,
+            "average_action_magnitude": self.average_action_magnitude,
+            "max_action_magnitude": self.max_action_magnitude,
         }
