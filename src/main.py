@@ -4,6 +4,7 @@ from utils.evaluation import (
     print_evaluation_results,
     print_average_summary,
 )
+from utils.mujoco_debug import inspect_mujoco_env
 def main():
     print("Starting Robot Arm RL Project...")
 
@@ -12,6 +13,9 @@ def main():
         render_mode="human"
     )
     env = robot_env.setup()
+    from utils.mujoco_debug import inspect_mujoco_env
+    inspect_mujoco_env(env)
+
     print("\nEnvironment loaded successfully.")
     print("Action space:", env.action_space)
     print("Observation space:", env.observation_space)
