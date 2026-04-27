@@ -27,7 +27,7 @@ The object represents the item the robot must manipulate.
 }
 ```
 
-### 2. Traget
+### 2. Target
 The target defines where the object should be placed.
 ```python
 {
@@ -53,9 +53,9 @@ Key properties:
 - random positions
 - configurable number of obstacles
 - reproducibility via seeds
-``` bash
+
 scenario = generator.generate_random_scenario()
-```
+
 
 ### 5. Scenario Validation
 

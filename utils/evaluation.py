@@ -1,8 +1,9 @@
 from utils.metrics import EpisodeMetrics
 from utils.scenario_generator import ScenarioGenerator
 import numpy as np
+from utils.scenario_visualizer import visualize_scenario
 
-def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_steps=100):
+def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_steps=100, visualize=False, output_dir="outputs"):
     """
     Runs one episode and returns scenario data together with episode metrics.
     At this stage, the scenario is used for configuration/logging.
@@ -12,7 +13,15 @@ def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_step
     scenario = scenario_generator.generate_random_scenario(
         number_of_obstacles=number_of_obstacles
     )
+    visualization_path = None
 
+    if visualize:
+        visualization_path = f"{output_dir}/scenario_seed_{scenario_seed}.png"
+        visualize_scenario(
+            scenario=scenario,
+            save_path=visualization_path,
+            show=False
+        )
     observation, info = robot_env.reset(seed=scenario_seed)
     metrics = EpisodeMetrics()
 
@@ -30,6 +39,7 @@ def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_step
         "scenario_seed": scenario_seed,
         "scenario": scenario,
         "metrics": episode_metrics,
+        "visualization_path": visualization_path,
     }
 
 def run_multiple_scenarios(
@@ -37,6 +47,7 @@ def run_multiple_scenarios(
     number_of_scenarios=3,
     number_of_obstacles=2,
     max_steps=100,
+    visualize=False,
 ):
     """
     Runs several episodes with different scenario seeds.
@@ -50,6 +61,7 @@ def run_multiple_scenarios(
             scenario_seed=scenario_seed,
             number_of_obstacles=number_of_obstacles,
             max_steps=max_steps,
+            visualize=visualize,
         )
         result["scenario_id"] = scenario_id + 1
         results.append(result)
@@ -108,6 +120,8 @@ def print_evaluation_results(results):
         print(f"  obstacle_count: {metrics['obstacle_count']}")
         print(f"  min_object_obstacle_distance: {metrics['min_object_obstacle_distance']}")
         print(f"  min_target_obstacle_distance: {metrics['min_target_obstacle_distance']}")
+        if result["visualization_path"]:
+            print(f"  visualization: {result['visualization_path']}")
 
 
 def print_average_summary(results):
