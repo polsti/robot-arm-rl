@@ -21,6 +21,7 @@ def main():
         number_of_scenarios=3,
         number_of_obstacles=2,
         max_steps=100,
+        visualize=True,
     )
     print_evaluation_results(results)
     print_average_summary(results)
