@@ -36,7 +36,6 @@ def run_single_episode(robot_env,
     for _ in range(max_steps):
         action = robot_env.sample_action()
         observation, reward, done, terminated, truncated, info = robot_env.step(action)
-        metrics.update(reward, action)
         object_position = observation["achieved_goal"]
         collision_detected, distance_to_obstacle = check_object_obstacle_collision(
             object_position=object_position,
@@ -44,6 +43,8 @@ def run_single_episode(robot_env,
         )
         if collision_detected:
             collision_count += 1
+            reward -= 5.0  # penalty for collision
+        metrics.update(reward, action)
         if (
             minimum_runtime_obstacle_distance is None
             or distance_to_obstacle < minimum_runtime_obstacle_distance
