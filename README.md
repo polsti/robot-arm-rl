@@ -17,6 +17,17 @@ The system is built using Gymnasium Robotics (FetchPickAndPlace environment).
 - Dainius - RL Algorithm & Training
 - Rustam - Integration & Documentation
 
+## Current Environment Features
+- Custom FetchPickAndPlace environment (PhysicalFetchPickAndPlaceDense-v0)
+- Physical obstacles added directly into the MuJoCo XML model
+- Scenario generation with object, target, and obstacle positions
+- Scenario validation checks
+- Multiple scenario evaluation
+- Episode metrics
+- Movement metrics
+- Obstacle-aware metrics
+- Collision-based reward penalty
+
 ## Setup Instructions
 ```bash
 python3 -m venv robot_env
