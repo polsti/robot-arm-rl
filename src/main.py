@@ -4,8 +4,7 @@ from utils.evaluation import (
     print_evaluation_results,
     print_average_summary,
 )
-from utils.mujoco_debug import inspect_mujoco_env
-#from utils.mujoco_obstacles import MujocoObstacleVisualizer
+
 import gymnasium as gym
 from gymnasium.envs.registration import register
 from envs.physical_fetch_env import PhysicalObstacleFetchPickAndPlaceEnv
