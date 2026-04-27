@@ -2,6 +2,7 @@ from utils.metrics import EpisodeMetrics
 from utils.scenario_generator import ScenarioGenerator
 import numpy as np
 from utils.scenario_visualizer import visualize_scenario
+from utils.obstacle_collision import check_object_obstacle_collision
 
 def run_single_episode(robot_env, 
                        scenario_seed, 
@@ -30,11 +31,24 @@ def run_single_episode(robot_env,
         )
     observation, info = robot_env.reset(seed=scenario_seed)
     metrics = EpisodeMetrics()
-
+    collision_count = 0
+    minimum_runtime_obstacle_distance = None
     for _ in range(max_steps):
         action = robot_env.sample_action()
         observation, reward, done, terminated, truncated, info = robot_env.step(action)
         metrics.update(reward, action)
+        object_position = observation["achieved_goal"]
+        collision_detected, distance_to_obstacle = check_object_obstacle_collision(
+            object_position=object_position,
+            obstacles=scenario["obstacles"],
+        )
+        if collision_detected:
+            collision_count += 1
+        if (
+            minimum_runtime_obstacle_distance is None
+            or distance_to_obstacle < minimum_runtime_obstacle_distance
+        ):
+            minimum_runtime_obstacle_distance = distance_to_obstacle
         if visualize:
             robot_env.env.render()
             if obstacle_visualizer is not None:
@@ -45,6 +59,8 @@ def run_single_episode(robot_env,
     obstacle_metrics = calculate_obstacle_metrics(scenario)
     episode_metrics = metrics.as_dict()
     episode_metrics.update(obstacle_metrics)
+    episode_metrics["collision_count"] = collision_count
+    episode_metrics["minimum_runtime_obstacle_distance"] = minimum_runtime_obstacle_distance
     return {
         "scenario_seed": scenario_seed,
         "scenario": scenario,
@@ -81,7 +97,7 @@ def run_multiple_scenarios(
     return results
 
 def calculate_obstacle_metrics(scenario):
-    """C
+    """
     calculates obstacle-related metrics for a generated scenario.
 
     metrics describe how difficult or risky the scenario is:
@@ -135,6 +151,12 @@ def print_evaluation_results(results):
         if result["visualization_path"]:
             print(f"  visualization: {result['visualization_path']}")
 
+        print(f"  collision_count: {metrics['collision_count']}")
+        print(
+            f"  minimum_runtime_obstacle_distance: "
+            f"{metrics['minimum_runtime_obstacle_distance']}"
+        )
+
 
 def print_average_summary(results):
     """
@@ -148,6 +170,8 @@ def print_average_summary(results):
     max_action_magnitude = 0.0
     min_object_obstacle_distance = 0.0
     min_target_obstacle_distance = 0.0
+    collision_count = 0
+    minimum_runtime_obstacle_distance = 0.0
 
     for result in results:
         metrics = result["metrics"]
@@ -159,6 +183,8 @@ def print_average_summary(results):
         max_action_magnitude += metrics["max_action_magnitude"]
         min_object_obstacle_distance += metrics["min_object_obstacle_distance"]
         min_target_obstacle_distance += metrics["min_target_obstacle_distance"]
+        collision_count += metrics["collision_count"]
+        minimum_runtime_obstacle_distance += metrics["minimum_runtime_obstacle_distance"]
 
     n = len(results)
     print("\nAverage evaluation summary:")
@@ -170,3 +196,8 @@ def print_average_summary(results):
     print(f"  average_max_action_magnitude: {max_action_magnitude / n}")
     print(f"  average_min_object_obstacle_distance: {min_object_obstacle_distance / n}")
     print(f"  average_min_target_obstacle_distance: {min_target_obstacle_distance / n}")
+    print(f"  total_collision_count: {collision_count}")
+    print(
+        f"  average_minimum_runtime_obstacle_distance: "
+        f"{minimum_runtime_obstacle_distance / n}"
+    )
