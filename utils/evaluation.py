@@ -3,7 +3,13 @@ from utils.scenario_generator import ScenarioGenerator
 import numpy as np
 from utils.scenario_visualizer import visualize_scenario
 
-def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_steps=100, visualize=False, output_dir="outputs"):
+def run_single_episode(robot_env, 
+                       scenario_seed, 
+                       number_of_obstacles=2, 
+                       max_steps=100, 
+                       visualize=False, 
+                       output_dir="outputs",
+                       obstacle_visualizer=None):
     """
     Runs one episode and returns scenario data together with episode metrics.
     At this stage, the scenario is used for configuration/logging.
@@ -29,6 +35,10 @@ def run_single_episode(robot_env, scenario_seed, number_of_obstacles=2, max_step
         action = robot_env.sample_action()
         observation, reward, done, terminated, truncated, info = robot_env.step(action)
         metrics.update(reward, action)
+        if visualize:
+            robot_env.env.render()
+            if obstacle_visualizer is not None:
+                obstacle_visualizer.draw_obstacles(robot_env.env, scenario)
         if done: break
 
     metrics.finish(observation, info)
@@ -48,6 +58,7 @@ def run_multiple_scenarios(
     number_of_obstacles=2,
     max_steps=100,
     visualize=False,
+    obstacle_visualizer=None,
 ):
     """
     Runs several episodes with different scenario seeds.
@@ -62,6 +73,7 @@ def run_multiple_scenarios(
             number_of_obstacles=number_of_obstacles,
             max_steps=max_steps,
             visualize=visualize,
+            obstacle_visualizer=obstacle_visualizer,
         )
         result["scenario_id"] = scenario_id + 1
         results.append(result)

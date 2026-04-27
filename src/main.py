@@ -5,6 +5,7 @@ from utils.evaluation import (
     print_average_summary,
 )
 from utils.mujoco_debug import inspect_mujoco_env
+from utils.mujoco_obstacles import MujocoObstacleVisualizer
 def main():
     print("Starting Robot Arm RL Project...")
 
@@ -13,9 +14,9 @@ def main():
         render_mode="human"
     )
     env = robot_env.setup()
-    from utils.mujoco_debug import inspect_mujoco_env
-    inspect_mujoco_env(env)
-
+    #from utils.mujoco_debug import inspect_mujoco_env
+    #inspect_mujoco_env(env)
+    obstacle_visualizer = MujocoObstacleVisualizer()
     print("\nEnvironment loaded successfully.")
     print("Action space:", env.action_space)
     print("Observation space:", env.observation_space)
@@ -26,6 +27,7 @@ def main():
         number_of_obstacles=2,
         max_steps=100,
         visualize=True,
+        obstacle_visualizer=obstacle_visualizer,
     )
     print_evaluation_results(results)
     print_average_summary(results)
