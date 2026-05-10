@@ -3,19 +3,6 @@ import gymnasium_robotics
 
 
 class RobotArmEnvironment:
-    """
-    Wrapper around Gymnasium-Robotics Fetch environments.
-
-    This class abstracts interaction with the simulation:
-    - creating the environment
-    - resetting episodes
-    - stepping through actions
-    - rendering
-    - closing
-
-    Used by RL agent (later) to interact with the environment.
-    """
-
     def __init__(self, env_name="FetchPickAndPlaceDense-v4", render_mode=None):
         self.env_name = env_name
         self.render_mode = render_mode
@@ -24,23 +11,13 @@ class RobotArmEnvironment:
     def setup(self):
         gym.register_envs(gymnasium_robotics)
 
-        self.env = gym.make(
-            self.env_name,
-            render_mode=self.render_mode,
-            max_episode_steps=100 # limit episode length
-        )
-
+        self.env = gym.make(self.env_name,
+                            render_mode=self.render_mode,
+                            max_episode_steps=100)
         return self.env
 
     def reset(self, seed=None):
-        """Reset the environment and return the initial observation and info.
-        :return:
-            observation: dict with keys:
-                - observation (full state)
-                - achieved_goal (current goal position)
-                - desired_goal (target position)
-            info: additional metadata
-        """
+
         if self.env is None:
             raise RuntimeError("Environment is not created. Call setup() first.")
 
