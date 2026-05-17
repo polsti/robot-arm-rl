@@ -14,7 +14,6 @@ class RobotArmEnvironment:
         self.env = gym.make(self.env_name,
                             render_mode=self.render_mode,
                             max_episode_steps=100)
-        return self.env
 
     def reset(self, seed=None):
 
