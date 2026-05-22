@@ -18,7 +18,7 @@
 			<geom size="0.25 0.25 0.2" type="box" mass="2000" material="table_mat" />
 		</body>
 		
-		<body name="obstacle_1" pos="1.075 0.525 0.425">
+		<body name="obstacle_1" pos="1.325 0.775 0.425">
 			<geom name="obstacle_1_geom" type="box" size="0.02 0.02 0.02" rgba="1 0 0 1" condim="3">
 			</geom>
 		</body>
